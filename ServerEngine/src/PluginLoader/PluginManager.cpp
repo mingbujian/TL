@@ -1,41 +1,13 @@
 #include "PluginManager.h"
-#include "IPlugin.h"
+#include "dep/common/IPlugin.h"
 #include "Dep/RapidXML/rapidxml.hpp"
 #include "Dep/RapidXML/rapidxml_iterators.hpp"
 #include "Dep/RapidXML/rapidxml_print.hpp"
 #include "Dep/RapidXML/rapidxml_utils.hpp"
-#include "Platform.h"
+#include "dep/common/Platform.h"
 
 #if NF_PLATFORM == NF_PLATFORM_WIN
 #pragma comment( lib, "ws2_32.lib" )
-#endif
-
-#ifdef NF_DEBUG_MODE
-
-#if NF_PLATFORM == NF_PLATFORM_WIN
-
-#elif NF_PLATFORM == NF_PLATFORM_LINUX || NF_PLATFORM == NF_PLATFORM_ANDROID
-//#pragma comment( lib, "libtherond.a" )
-#elif NF_PLATFORM == NF_PLATFORM_APPLE || NF_PLATFORM == NF_PLATFORM_APPLE_IOS
-//#pragma comment( lib, "libtherond.a" )
-#endif
-
-#else
-
-#if NF_PLATFORM == NF_PLATFORM_WIN
-
-#elif NF_PLATFORM == NF_PLATFORM_LINUX || NF_PLATFORM == NF_PLATFORM_ANDROID
-//#pragma comment( lib, "libtheron.a" )
-#elif NF_PLATFORM == NF_PLATFORM_APPLE || NF_PLATFORM == NF_PLATFORM_APPLE_IOS
-//#pragma comment( lib, "libtheron.a" )
-#endif
-
-#endif
-
-
-#ifndef NF_DYNAMIC_PLUGIN
-//for nf-sdk plugins
-//#include "NFComm/NFTestPlugin/NFTestPlugin.h"
 #endif
 
 PluginManager&  g_PluginManger = Singleton<PluginManager>::Instance();
@@ -61,20 +33,20 @@ PluginManager::PluginManager() : IPluginManager()
 	mstrConfigPath = "../";
 
 #ifdef NF_DEBUG_MODE
-   mstrConfigName = "NFDataCfg/Debug/Plugin.xml";
+   mstrConfigName = "config/plugin.xml";
 #else
-   mstrConfigName = "NFDataCfg/Release/Plugin.xml";
+   mstrConfigName = "NFDataCfg/Release/plugin.xml";
 #endif
 }
 
 PluginManager::~PluginManager()
 {
-
 }
 
 bool PluginManager::LoadPlugin()
 {
 	std::cout << "----LoadPlugin----" << std::endl;
+    SetConfigPath("../");
 
 	LoadPluginConfig();
 
@@ -86,7 +58,7 @@ bool PluginManager::LoadPlugin()
 	for (; it != mPluginNameMap.end(); ++it)
 	{
 #ifdef NF_DYNAMIC_PLUGIN
-		LoadPluginLibrary(it->first);
+        LoadDynamicPlugin(it->first);
 #else
 		LoadStaticPlugin(it->first);
 #endif
@@ -147,9 +119,7 @@ bool PluginManager::LoadPluginConfig()
     for (rapidxml::xml_node<>* pPluginNode = pAppNameNode->first_node("Plugin"); pPluginNode; pPluginNode = pPluginNode->next_sibling("Plugin"))
     {
         const char* strPluginName = pPluginNode->first_attribute("Name")->value();
-
         mPluginNameMap.insert(PluginNameMap::value_type(strPluginName, true));
-
     }
 
     return true;
@@ -414,7 +384,7 @@ void PluginManager::SetConfigName(const std::string & strFileName)
 	}
 
 #ifdef NF_DEBUG_MODE
-	mstrConfigName = "NFDataCfg/Debug/" + strFileName;
+	mstrConfigName = "config/" + strFileName;
 #else
 	mstrConfigName = "NFDataCfg/Release/" + strFileName;
 #endif
@@ -581,7 +551,7 @@ bool PluginManager::Finalize()
 	return true;
 }
 
-bool PluginManager::LoadPluginLibrary(const std::string& strPluginDLLName)
+bool PluginManager::LoadDynamicPlugin(const std::string& strPluginDLLName)
 {
     PluginLibMap::iterator it = mPluginLibMap.find(strPluginDLLName);
     if (it == mPluginLibMap.end())
@@ -656,7 +626,5 @@ bool PluginManager::UnLoadPluginLibrary(const std::string& strPluginDLLName)
 bool PluginManager::UnLoadStaticPlugin(const std::string & strPluginDLLName)
 {
 	//     DESTROY_PLUGIN(this, NFConfigPlugin)
-	//     DESTROY_PLUGIN(this, NFEventProcessPlugin)
-	//     DESTROY_PLUGIN(this, NFKernelPlugin)
 	return false;
 }

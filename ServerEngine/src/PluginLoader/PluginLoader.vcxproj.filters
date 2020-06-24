@@ -26,22 +26,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lexical_cast.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Singleton.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="PluginManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="IPluginManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="IPlugin.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="DynLib.h">

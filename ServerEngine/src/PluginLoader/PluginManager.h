@@ -6,8 +6,8 @@
 #include <time.h>
 #include <thread>
 #include "DynLib.h"
-#include "Singleton.hpp"
-#include "IPluginManager.h"
+#include "dep/common/Singleton.hpp"
+#include "dep/common/IPluginManager.h"
 #include <vector>
 
 class PluginManager;
@@ -64,7 +64,7 @@ protected:
     bool CheckStaticPlugin();
 
     bool LoadStaticPlugin(const std::string& strPluginDLLName);
-    bool LoadPluginLibrary(const std::string& strPluginDLLName);
+    bool LoadDynamicPlugin(const std::string& strPluginDLLName);
     bool UnLoadPluginLibrary(const std::string& strPluginDLLName);
     bool UnLoadStaticPlugin(const std::string& strPluginDLLName);
 

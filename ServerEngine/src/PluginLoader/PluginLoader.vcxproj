@@ -69,15 +69,19 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)_Out\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Temp\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/ServerEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/ServerEngine;$(SolutionDir)/ServerEngine/Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <PreprocessorDefinitions>NF_DYNAMIC_PLUGIN;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -122,13 +126,8 @@
     <ClCompile Include="PluginLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lexical_cast.hpp" />
     <ClInclude Include="DynLib.h" />
-    <ClInclude Include="IPlugin.h" />
-    <ClInclude Include="IPluginManager.h" />
-    <ClInclude Include="Platform.h" />
     <ClInclude Include="PluginManager.h" />
-    <ClInclude Include="Singleton.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

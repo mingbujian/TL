@@ -9,9 +9,7 @@
 #include <functional>
 #include <atomic>
 #include "PluginManager.h"
-//#include "NFComm/NFCore/NFException.h"
-#include "Platform.h"
-//#include "NFComm/NFLogPlugin/easylogging++.h"
+#include "dep/common/Platform.h"
 
 #if NF_PLATFORM != NF_PLATFORM_WIN
 #include <unistd.h>
@@ -62,12 +60,162 @@ void PrintfLogo()
 	std::cout << "Hello World!" << std::endl;
 }
 
+#if NF_PLATFORM == NF_PLATFORM_WIN
+bool ApplicationCtrlHandler(DWORD fdwctrltype)
+{
+    switch (fdwctrltype)
+    {
+    case CTRL_C_EVENT:
+    case CTRL_CLOSE_EVENT:
+    case CTRL_BREAK_EVENT:
+    case CTRL_LOGOFF_EVENT:
+    case CTRL_SHUTDOWN_EVENT:
+    {
+        //bExitApp = true;
+    }
+    return true;
+    default:
+        return false;
+    }
+}
+#endif
+
+void CloseXButton()
+{
+#if NF_PLATFORM == NF_PLATFORM_WIN
+    HWND hWnd = GetConsoleWindow();
+    if (hWnd)
+    {
+        HMENU hMenu = GetSystemMenu(hWnd, FALSE);
+        EnableMenuItem(hMenu, SC_CLOSE, MF_DISABLED | MF_BYCOMMAND);
+    }
+#endif
+}
 
 void ProcessParameter(int argc, char* argv[])
 {
-    //不是调试模式，InitDaemon();
-}
+    for (int i = 0; i < argc; i++)
+    {
+        strArgvList += " ";
+        strArgvList += argv[i];
+    }
 
+#if NF_PLATFORM == NF_PLATFORM_WIN
+    SetConsoleCtrlHandler((PHANDLER_ROUTINE)ApplicationCtrlHandler, true);
+
+    if (strArgvList.find("-x") != string::npos)
+    {
+        CloseXButton();
+    }
+#else
+    //run it as a daemon process
+    if (strArgvList.find("-d") != string::npos)
+    {
+        InitDaemon();
+    }
+
+    signal(SIGPIPE, SIG_IGN);
+    signal(SIGCHLD, SIG_IGN);
+#endif
+
+    if (strArgvList.find("Path=") != string::npos)
+    {
+        for (int i = 0; i < argc; i++)
+        {
+            strDataPath = argv[i];
+            if (strDataPath.find("Path=") != string::npos)
+            {
+                strDataPath.erase(0, 5);
+                break;
+            }
+        }
+
+        g_PluginManger.SetConfigPath(strDataPath);
+    }
+    else
+    {
+        g_PluginManger.SetConfigPath("../");
+    }
+
+    if (strArgvList.find("Plugin=") != string::npos)
+    {
+        for (int i = 0; i < argc; i++)
+        {
+            strPluginName = argv[i];
+            if (strPluginName.find(".xml") != string::npos)
+            {
+                strPluginName.erase(0, 7);
+                break;
+            }
+        }
+
+        g_PluginManger.SetConfigName(strPluginName);
+    }
+
+    if (strArgvList.find("Server=") != string::npos)
+    {
+        for (int i = 0; i < argc; i++)
+        {
+            strAppName = argv[i];
+            if (strAppName.find("Server=") != string::npos)
+            {
+                strAppName.erase(0, 7);
+                break;
+            }
+        }
+
+        g_PluginManger.SetAppName(strAppName);
+    }
+
+    if (strArgvList.find("ID=") != string::npos)
+    {
+        for (int i = 0; i < argc; i++)
+        {
+            strAppID = argv[i];
+            if (strAppID.find("ID=") != string::npos)
+            {
+                strAppID.erase(0, 3);
+                break;
+            }
+        }
+
+        int nAppID = 0;
+        if (NF_StrTo(strAppID, nAppID))
+        {
+            g_PluginManger.SetAppID(nAppID);
+        }
+    }
+
+    if (strArgvList.find("Docker=") != string::npos)
+    {
+        std::string strDockerFlag = "0";
+        for (int i = 0; i < argc; i++)
+        {
+            strDockerFlag = argv[i];
+            if (strDockerFlag.find("Docker=") != string::npos)
+            {
+                strDockerFlag.erase(0, 7);
+                break;
+            }
+        }
+
+        int nDockerFlag = 0;
+        if (NF_StrTo(strDockerFlag, nDockerFlag))
+        {
+            g_PluginManger.SetRunningDocker(nDockerFlag);
+        }
+    }
+
+    strTitleName = strAppName + strAppID;// +" PID" + NFGetPID();
+    strTitleName.replace(strTitleName.find("Server"), 6, "");
+    strTitleName = "NF" + strTitleName;
+#if NF_PLATFORM == NF_PLATFORM_WIN
+    SetConsoleTitle(strTitleName.c_str());
+#elif NF_PLATFORM == NF_PLATFORM_LINUX
+    prctl(PR_SET_NAME, strTitleName.c_str());
+    //setproctitle(strTitleName.c_str());
+#endif
+}
 
 int main(int argc, char* argv[])
 {
@@ -83,6 +231,7 @@ int main(int argc, char* argv[])
 	ProcessParameter(argc, argv);
 	PrintfLogo();
 
+    
     g_PluginManger.LoadPlugin();
 	g_PluginManger.Awake();
 	g_PluginManger.Init();
@@ -99,6 +248,5 @@ int main(int argc, char* argv[])
     }
 
 	ReleaseNF();
-
 	return 0;
 }
