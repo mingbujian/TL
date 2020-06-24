@@ -28,7 +28,7 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "NFPlatform.h"
+#include "Platform.h"
 
 #if NF_PLATFORM == NF_PLATFORM_WIN
 #    define DYNLIB_HANDLE hInstance
@@ -55,12 +55,12 @@ typedef struct HINSTANCE__* hInstance;
 
 #endif
 
-class NFDynLib
+class DynLib
 {
 
 public:
 
-    NFDynLib(const std::string& strName)
+    DynLib(const std::string& strName)
     {
         mbMain = false;
         mstrName = strName;
@@ -79,7 +79,7 @@ public:
         printf("LoadPlugin:%s\n", mstrName.c_str());
     }
 
-    ~NFDynLib()
+    ~DynLib()
     {
 
     }

@@ -8,9 +8,9 @@
 #include <future>
 #include <functional>
 #include <atomic>
-#include "NFPluginManager.h"
+#include "PluginManager.h"
 //#include "NFComm/NFCore/NFException.h"
-#include "NFPlatform.h"
+#include "Platform.h"
 //#include "NFComm/NFLogPlugin/easylogging++.h"
 
 #if NF_PLATFORM != NF_PLATFORM_WIN
@@ -36,14 +36,11 @@ std::string strAppName;
 std::string strAppID;
 std::string strTitleName;
 
-
-void MainExecute();
-
 void ReleaseNF()
 {
 }
 
-
+//守护进程
 void InitDaemon()
 {
 #if NF_PLATFORM != NF_PLATFORM_WIN
@@ -68,22 +65,9 @@ void PrintfLogo()
 
 void ProcessParameter(int argc, char* argv[])
 {
+    //不是调试模式，InitDaemon();
 }
 
-void MainExecute()
-{
-
-	uint64_t nIndex = 0;
-	while (!bExitApp)
-	{
-		nIndex++;
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-		NFPluginManager::GetSingletonPtr()->Execute();
-
-	}
-}
 
 int main(int argc, char* argv[])
 {
@@ -97,18 +81,22 @@ int main(int argc, char* argv[])
 #endif
 
 	ProcessParameter(argc, argv);
-
-
 	PrintfLogo();
 
-	NFPluginManager::GetSingletonPtr()->LoadPlugin();
-	NFPluginManager::GetSingletonPtr()->Awake();
-	NFPluginManager::GetSingletonPtr()->Init();
-	NFPluginManager::GetSingletonPtr()->AfterInit();
-	NFPluginManager::GetSingletonPtr()->CheckConfig();
-	NFPluginManager::GetSingletonPtr()->ReadyExecute();
+    g_PluginManger.LoadPlugin();
+	g_PluginManger.Awake();
+	g_PluginManger.Init();
+	g_PluginManger.AfterInit();
+	g_PluginManger.CheckConfig();
+	g_PluginManger.ReadyExecute();
 
-	MainExecute();
+    uint64_t nIndex = 0;
+    while (!bExitApp)
+    {
+        nIndex++;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        g_PluginManger.Execute();
+    }
 
 	ReleaseNF();
 

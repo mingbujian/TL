@@ -18,36 +18,33 @@
     <ClCompile Include="PluginLoader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="NFPluginManager.cpp">
+    <ClCompile Include="PluginManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="NFDynLib.cpp">
+    <ClCompile Include="DynLib.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="NFIPluginManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="NFPluginManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="NFDynLib.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="NFIPlugin.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="NFPlatform.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="NFSingleton.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="NFMemManager.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="lexical_cast.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IPluginManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IPlugin.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DynLib.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
